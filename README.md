@@ -1,6 +1,6 @@
-# Uchambuzi Macroeconomics And Financial Analysis Application
+# Macroeconomics And Financial Analysis Application
 
-This Flask application provides a web interface for viewing various macroeconomic data visualizations, including nominal GDP, population trends, GDP per capita, exchange rates, and inflation rates. Users can log in, sign up, and view different dashboards showcasing this data in interactive charts.
+This application provides macroeconomic data visualizations, including nominal GDP, population trends, GDP per capita, exchange rates, and inflation rates. Users can log in, sign up, and view different dashboards showcasing this data in interactive charts.
 
 ## Features
 
@@ -53,12 +53,14 @@ This Flask application provides a web interface for viewing various macroeconomi
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/yourrepository.git
-   cd yourrepository
+   git clone https://github.com/cmmasaba/mahiri.git
+   cd mahiri
 
-2. Clone the repository:
+2. Create a virtual environment and install requirements:
 
    ```bash
+   python -m venv .venv
+   source .venv/bin/activate
    pip install -r requirements.txt
 
 3. Run the application:
@@ -78,7 +80,7 @@ This Flask application provides a web interface for viewing various macroeconomi
 - plotly: Library for creating interactive charts and plots.
 
 ## License
-- This project is licensed under the MIT License - see the LICENSE file for details.
+- This project and intellectual property is licensed under the MIT License - see the LICENSE file for more details. 
 
 ### Contact
-- For any inquiries or issues, please contact [user@gmail.com].
+- For any inquiries or issues, please contact [mmasabacollins9@gmail.com].
