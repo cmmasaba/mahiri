@@ -83,4 +83,4 @@ This application provides macroeconomic data visualizations, including nominal G
 - This project and intellectual property is licensed under the MIT License - see the LICENSE file for more details. 
 
 ### Contact
-- For any inquiries or issues, please contact [mmasabacollins9@gmail.com].
+- For any inquiries, issues or source contributions, please contact [mmasabacollins9@gmail.com].
