@@ -126,14 +126,23 @@ if the user has subscribed for premium content or not. If not, they are prompted
 
 ## Improvements
 
-- OpenID Connect for authentication. As long as you have an account with an authentication provide like Google, you can use that account to sign in 
+<div align="justify">
+OpenID Connect for authentication. As long as you have an account with an authentication provide like Google, you can use that account to sign in 
 to other services. The main benefit is it takes a way the need to have multiple passwprds for each site and having to remember all of them. 
 Due to time constraints I was not able to implement this feature but it is on the way.
-- The sites providing the datasets don't provide URLs that can be used to programmatically fetch the data. Therefore you must download the data 
+</div>
+<br>
+<div align="justify">
+The sites providing the datasets don't provide URLs that can be used to programmatically fetch the data. Therefore you must download the data 
 before using it. In order to stay up to date, for example for shares prices, I would have to download the new datasets daily and replace the old 
 ones. That approach won't scale well. A solution I will implement is to create a background task that will be visiting the sites with data daily 
 and scraping the latest datasets, and replace the old ones. I also wasn't able to do this due to time contraints but it's on the way.
-- CI/CD for automatic integrations and deploying after every change is tracked on GitHub.
+</div> 
+<br>
+<div align="justify">
+CI/CD for automatic integrations and deploying after every change is tracked on GitHub, and automated tests to ensure the integrity of the app is
+maintained after every change. Both features are underway and will be integrated before end of week.
+</div>
 
 ## License
 - This project and intellectual property is licensed under the MIT License - see the LICENSE file for more details. 
