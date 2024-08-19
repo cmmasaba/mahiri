@@ -599,9 +599,9 @@ def process_payment():
 
         try:
             if (int(price) == 0):
-                desc = "DaNalysis Premium Membership (Coupon applied) - Inflation"
+                desc = "Uchambuzi Premium Membership (Coupon applied) - Inflation"
             else:
-                desc = "DaNalysis Premium Membership - Inflation"
+                desc = "Uchambuzi Premium Membership - Inflation"
             # Create a charge using the token
             charge = stripe.Charge.create(
                 amount=10000,  # Amount in cents
@@ -622,9 +622,9 @@ def process_payment():
         print("MPESA method")
         full_name = request.form['full_name']
         mobile_number = request.form['mobile_number']
-        # Integrate with M-Pesa SDK here
+        #TODO Integrate with M-Pesa SDK here
         flash('M-Pesa payment initiated! Follow the instructions on your phone.', 'success')
-        # Update user’s premium status in the database (will use a callback from M-Pesa)
+        #TODO Update user’s premium status in the database (will use a callback from M-Pesa)
         user_ref.update({'premium': True})
         return redirect(url_for('inflation_trend', is_premium=True))
 
@@ -670,9 +670,9 @@ def process_payment_shares():
 
         try:
             if (int(price) == 0):
-                desc = "DaNalysis Premium Membership (Coupon applied) - Shares"
+                desc = "Uchambuzi Premium Membership (Coupon applied) - Shares"
             else:
-                desc = "DaNalysis Premium Membership - Shares"
+                desc = "Uchambuzi Premium Membership - Shares"
             # Create a charge using the token
             charge = stripe.Charge.create(
                 amount=10000,  # Amount in cents
