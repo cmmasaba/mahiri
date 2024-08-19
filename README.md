@@ -108,23 +108,23 @@ service.
 </div>
 <br>
 
-**Firebase for auntentication and storage**
+**Firebase for auntentication and Firestore for storage**
 <div align="justify">
 Firebase offers a robust and automatically scalable platform for managing user authentication and storage. It is free for most use cases, like 
-this particular one. It offers a variety of authentication options like email/password, OAuth, etc. It can be integrated easily with other backend services through the use of Firebase admin sdk, for verifying and managing use credentials serverside. Since the only databse needed would be for 
-users, it made sense using Firebase for authentication and storage of the user data.
+this particular one. It offers a variety of authentication options like email/password, OAuth, etc. It can be integrated easily with other backend services through the use of Firebase admin sdk, for verifying and managing use credentials serverside. Firestore is NoSQL database optimised for
+performance. Since the only database needed is for users, with very few fields, using an optimized NoSQL db was a good choice.
 </div>
 
 ## Improvements
 
-- Authentication is always a pain point in any application. In my opinion there are better alternatives to using email/password combinations, for 
-example OpenID Connect, where as long as you have an account with an authentication provide like Google, you can use that account to sign in to other 
-services. The main benefit is it takes a way the need to have multiple passwprds for each site and having to remember all of them. Due to time 
-constraints I was not able to implement this feature but it is on the way.
+- OpenID Connect for authentication. As long as you have an account with an authentication provide like Google, you can use that account to sign in 
+to other services. The main benefit is it takes a way the need to have multiple passwprds for each site and having to remember all of them. 
+Due to time constraints I was not able to implement this feature but it is on the way.
 - The sites providing the datasets don't provide URLs that can be used to programmatically fetch the data. Therefore you must download the data 
 before using it. In order to stay up to date, for example for shares prices, I would have to download the new datasets daily and replace the old 
 ones. That approach won't scale well. A solution I will implement is to create a background task that will be visiting the sites with data daily 
 and scraping the latest datasets, and replace the old ones. I also wasn't able to do this due to time contraints but it's on the way.
+- CI/CD
 
 ## License
 - This project and intellectual property is licensed under the MIT License - see the LICENSE file for more details. 
