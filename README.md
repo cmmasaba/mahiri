@@ -115,6 +115,14 @@ this particular one. It offers a variety of authentication options like email/pa
 performance. Since the only database needed is for users, with very few fields, using an optimized NoSQL db was a good choice.
 </div>
 
+**Stripe Payment Integration**
+<div align="justify">
+Stripe provides an easy to use REST API that allows VISA and Mastercard integration for payment processing. When processing payments, the app checks 
+if a promo code was applied or not. If not, it creates a charge on Stripe using the card details provided, and deducts the amount required in cents. 
+After the payment is processed the user document in Firestore is updated to register that. Before displaying premium content, a check is made to see 
+if the user has subscribed for premium content or not. If not, they are prompted to subscribe.
+</div>
+
 ## Improvements
 
 - OpenID Connect for authentication. As long as you have an account with an authentication provide like Google, you can use that account to sign in 
@@ -124,7 +132,7 @@ Due to time constraints I was not able to implement this feature but it is on th
 before using it. In order to stay up to date, for example for shares prices, I would have to download the new datasets daily and replace the old 
 ones. That approach won't scale well. A solution I will implement is to create a background task that will be visiting the sites with data daily 
 and scraping the latest datasets, and replace the old ones. I also wasn't able to do this due to time contraints but it's on the way.
-- CI/CD
+- CI/CD for automatic integrations and deploying after every change is tracked on GitHub.
 
 ## License
 - This project and intellectual property is licensed under the MIT License - see the LICENSE file for more details. 
