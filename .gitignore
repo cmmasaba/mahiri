@@ -2,3 +2,5 @@
 config.py
 firebase-adminsdk.json
 __pycache__/
+.env
+mahiri.code-workspace
