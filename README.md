@@ -114,6 +114,7 @@ Firebase offers a robust and automatically scalable platform for managing user a
 this particular one. It offers a variety of authentication options like email/password, OAuth, etc. It can be integrated easily with other backend services through the use of Firebase admin sdk, for verifying and managing use credentials serverside. Firestore is NoSQL database optimised for
 performance. Since the only database needed is for users, with very few fields, using an optimized NoSQL db was a good choice.
 </div>
+<br>
 
 **Stripe Payment Integration**
 <div align="justify">
