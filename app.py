@@ -1,18 +1,40 @@
+# Third party
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import pyrebase
-from config import firebaseConfig
 import pandas as pd
 import plotly.express as px
-import datetime
 import stripe
+import firebase_admin
+from firebase_admin import firestore, credentials
+from dotenv import load_dotenv
+
+# Built-in
+import os
+import datetime
+
+# Local
+from config import firebaseConfig
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+API_KEY = os.getenv("STRIPE_API_KEY")
+CREDENTIALS_FILE = os.getenv("SDK_FILE")
 
 app = Flask(__name__)
-app.secret_key = 'secrt7436-tehdhhe'
-stripe.api_key = 'sk_test_51Pn2ifK4FVOPIRC2iy1vtQfyHkbWI6S8CdXlWbMO1DPujPtlUgoSu3e4s9IvKyMDhsqGe3RAFuzWusUVZrliMv8d00HVfNHReK'
+app.secret_key = SECRET_KEY
+stripe.api_key = API_KEY
 
 # Initialize Firebase
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
+
+# Initialize Firebase Admin SDK with credentials
+cred = credentials.Certificate(CREDENTIALS_FILE)
+firebase_admin.initialize_app(cred)
+
+# Initialize Firestore
+db = firestore.client()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -33,6 +55,7 @@ def login():
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             session['user'] = user['idToken']
+            session['user_id'] = user['localId']  # Store user_id in session
             return redirect(url_for('landing_page'))
         except:
             return "Login failed. Please check your credentials."
@@ -55,12 +78,28 @@ def signup():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+
         if password == confirm_password:
             try:
-                auth.create_user_with_email_and_password(email, password)
-                return redirect(url_for('login'))
-            except:
-                return "Sign up failed. Please try again."
+                # creating user in firebase authentocation
+                user = auth.create_user_with_email_and_password(email, password)
+
+                # add user info to firebase database
+                user_id = user['localId']
+                data = {
+                    "email": email,
+                    "premium": False  # False for free users
+                }
+                user_ref = db.collection('users').document(user_id)
+                user_ref.set(data)
+
+                # Store user session information
+                session['user'] = user['idToken']
+                session['user_id'] = user['localId']
+
+                return redirect(url_for('landing_page'))
+            except Exception as e:
+                return f"Sign up failed. Please try again. {e}"
         else:
             return "Passwords do not match."
     return render_template('signup.html')
@@ -75,6 +114,7 @@ def logout():
         str: Redirect to the login page.
     """
     session.pop('user', None)
+    session.pop('user_id', None)  # Remove user_id from session
     return redirect(url_for('login'))
 
 @app.route('/')
@@ -491,7 +531,16 @@ def inflation_trend():
         return redirect(url_for('login'))
 
     # Set is a full member
-    is_premium = request.args.get('is_premium', False, type=bool)
+    user_id = session['user_id']
+    # Fetch the user's premium status from Firestore
+    user_ref = db.collection('users').document(user_id)
+    user_doc = user_ref.get()
+
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        is_premium = user_data.get('premium', False)
+    else:
+        is_premium = False  # Default to non-premium if user not found
 
     # inflation trend processing & plotting
     df = pd.read_csv('datasets/Inflation_Rates.csv')
@@ -538,6 +587,9 @@ def process_payment():
     """
     payment_method = request.form.get('payment')
 
+    user_id = session.get('user_id')
+    user_ref = db.collection('users').document(user_id)
+
     if payment_method == 'visa':
         # Get form data including stripe token
         token = request.form['stripeToken']
@@ -561,6 +613,8 @@ def process_payment():
                     'customer_address': customer_address
                 }
             )
+            # Update user's premium status in the database
+            user_ref.update({'premium': True})
             return redirect(url_for('inflation_trend', is_premium=True))
         except stripe.error.StripeError as e:
             return redirect(url_for('paywall'))
@@ -570,6 +624,8 @@ def process_payment():
         mobile_number = request.form['mobile_number']
         # Integrate with M-Pesa SDK here
         flash('M-Pesa payment initiated! Follow the instructions on your phone.', 'success')
+        # Update user’s premium status in the database (will use a callback from M-Pesa)
+        user_ref.update({'premium': True})
         return redirect(url_for('inflation_trend', is_premium=True))
 
 @app.route('/paywall_shares')
@@ -602,6 +658,9 @@ def process_payment_shares():
     """
     payment_method = request.form.get('payment')
 
+    user_id = session.get('user_id')
+    user_ref = db.collection('users').document(user_id)
+
     if payment_method == 'visa':
         # Get form data including stripe token
         token = request.form['stripeToken']
@@ -625,6 +684,8 @@ def process_payment_shares():
                     'customer_address': customer_address
                 }
             )
+            # Update user's premium status in the database
+            user_ref.update({'premium': True})
             return redirect(url_for('page2', is_premium=True))
         except stripe.error.StripeError as e:
             return redirect(url_for('paywall'))
@@ -634,6 +695,8 @@ def process_payment_shares():
         mobile_number = request.form['mobile_number']
         # Integrate with M-Pesa SDK here
         flash('M-Pesa payment initiated! Follow the instructions on your phone.', 'success')
+        # Update user's premium status in the database
+        user_ref.update({'premium': True})
         return redirect(url_for('page2', is_premium=True))
 
 
@@ -701,7 +764,17 @@ def page2():
         return redirect(url_for('login'))
 
     # Set is a full member
-    is_premium = request.args.get('is_premium', False, type=bool)
+    user_id = session['user_id']
+    # Fetch the user's premium status from Firestore
+    user_ref = db.collection('users').document(user_id)
+    user_doc = user_ref.get()
+
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        is_premium = user_data.get('premium', False)
+    else:
+        is_premium = False  # Default to non-premium if user not found
+
 
     # July To Date Safaricom Share Prices processing & ploting
     df = pd.read_csv('datasets/Share_Prices_June_TD.csv')
@@ -722,4 +795,5 @@ def page2():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
